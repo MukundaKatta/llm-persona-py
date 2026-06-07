@@ -1,4 +1,5 @@
 """Tests for llm-persona-py."""
+
 import pytest
 from llm_persona import Persona, PersonaRegistry
 
@@ -20,6 +21,21 @@ def test_persona_with_variables_missing_key_passthrough():
     p = Persona(name="t", system_prompt="Hello {missing}!")
     p2 = p.with_variables({"other": "x"})
     assert "{missing}" in p2.system_prompt
+
+
+def test_persona_with_variables_bad_attribute_passthrough():
+    # {user.nope} triggers AttributeError inside format_map; should fall back
+    # to the original prompt rather than raising.
+    p = Persona(name="t", system_prompt="Hi {user.nope}")
+    p2 = p.with_variables({"user": "astring"})
+    assert p2.system_prompt == "Hi {user.nope}"
+
+
+def test_persona_with_variables_bad_index_passthrough():
+    # {nums[5]} triggers IndexError inside format_map; should fall back.
+    p = Persona(name="t", system_prompt="Hi {nums[5]}")
+    p2 = p.with_variables({"nums": [1, 2]})
+    assert p2.system_prompt == "Hi {nums[5]}"
 
 
 def test_registry_add_and_get():

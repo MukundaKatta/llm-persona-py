@@ -23,7 +23,10 @@ class Persona:
         """Return a new Persona with variables interpolated into the system prompt."""
         try:
             rendered = self.system_prompt.format_map(variables)
-        except (KeyError, ValueError):
+        except (KeyError, IndexError, AttributeError, ValueError, TypeError):
+            # Leave the prompt unrendered if interpolation fails for any
+            # reason (missing key, bad attribute/index access, malformed
+            # format spec, etc.) so callers always get a usable prompt.
             rendered = self.system_prompt
         return Persona(
             name=self.name,
