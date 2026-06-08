@@ -22,3 +22,6 @@ Homepage = "https://github.com/MukundaKatta/llm-persona-py"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+llm_persona = ["py.typed"]
